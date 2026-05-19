@@ -12,7 +12,18 @@ class LocalizatorController extends Controller
     public function index()
     {
         $languages = Language::all();
-        return view('localizator.index', compact('languages'));
+
+        $totalLanguages = Language::count();
+        $totalKeys = Translation::count();
+
+        return view(
+            'localizator.index',
+            compact(
+                'languages',
+                'totalLanguages',
+                'totalKeys'
+            )
+        );
     }
 
     public function storeLanguage(Request $request)
@@ -22,68 +33,156 @@ class LocalizatorController extends Controller
             'name' => 'required|string|max:50',
         ]);
 
-        // Check if language code already exists
-        $existing = Language::where('code', $request->code)->first();
+        $existing = Language::where(
+            'code',
+            $request->code
+        )->first();
+
         if ($existing) {
-            return redirect()->back()->with('success', "Language '{$request->code}' already exists!");
+            return redirect()
+                ->back()
+                ->with(
+                    'success',
+                    "Language already exists!"
+                );
         }
 
         Language::create([
             'code' => $request->code,
-            'name' => $request->name,
+            'name' => $request->name
         ]);
 
-        return redirect()->back()->with('success', "Language '{$request->name}' added successfully!");
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Language added successfully!'
+            );
     }
 
     public function translations($lang)
     {
-        $language = Language::where('code', $lang)->firstOrFail();
+        $language = Language::where(
+            'code',
+            $lang
+        )->firstOrFail();
+
         $translations = Translation::all();
-        return view('localizator.translations', compact('language', 'translations'));
+
+        $total = $translations->count();
+
+        $completed = 0;
+
+        foreach ($translations as $translation) {
+
+            if (
+                !empty($translation->value[$lang] ?? null)
+            ) {
+                $completed++;
+            }
+        }
+
+        $progress = $total
+            ? round(
+                ($completed / $total) * 100
+            )
+            : 0;
+
+        return view(
+            'localizator.translations',
+            compact(
+                'language',
+                'translations',
+                'completed',
+                'total',
+                'progress'
+            )
+        );
     }
 
-    public function saveTranslations(Request $request, $lang)
-    {
-        foreach ($request->keys as $key => $value) {
-            // Create or get existing
-            $tr = Translation::firstOrCreate(['key' => $key]);
+    public function saveTranslations(
+        Request $request,
+        $lang
+    ) {
 
-            // Get existing array or empty
-            $current = $tr->value ?? [];
+        foreach (
+            $request->keys as $key => $value
+        ) {
 
-            // Update language value only if not empty
-            if (!is_null($value) && $value !== '') {
+            $translation =
+                Translation::firstOrCreate([
+                    'key' => $key
+                ]);
+
+            $current =
+                $translation->value ?? [];
+
+            if (
+                !empty($value)
+            ) {
                 $current[$lang] = $value;
             }
 
-            $tr->value = $current;
-            $tr->save();
+            $translation->value =
+                $current;
+
+            $translation->save();
         }
 
-        return redirect()->back()->with('success', 'Translations saved!');
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Translations saved!'
+            );
     }
 
     public function export($lang)
     {
-        $translations = Translation::all();
+        $translations =
+            Translation::all();
 
         $data = [];
-        foreach ($translations as $translation) {
-            $value = $translation->value[$lang] ?? '';
-            $data[$translation->key] = $value;
+
+        foreach (
+            $translations as $translation
+        ) {
+
+            $data[$translation->key] =
+                $translation->value[$lang]
+                ?? '';
         }
 
-        // Ensure the resources/lang folder exists
-        $langPath = resource_path('lang');
-        if (!File::exists($langPath)) {
-            File::makeDirectory($langPath, 0755, true);
+        $langPath =
+            resource_path('lang');
+
+        if (
+            !File::exists(
+                $langPath
+            )
+        ) {
+
+            File::makeDirectory(
+                $langPath,
+                0755,
+                true
+            );
         }
 
-        // Save the JSON file
-        $file = $langPath . "/{$lang}.json";
-        File::put($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        File::put(
+            $langPath . "/{$lang}.json",
+            json_encode(
+                $data,
+                JSON_PRETTY_PRINT |
+                    JSON_UNESCAPED_UNICODE
+            )
+        );
 
-        return redirect()->back()->with('success', "Language '{$lang}' exported successfully!");
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'JSON exported successfully!'
+            );
     }
 }

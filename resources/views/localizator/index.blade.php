@@ -3,127 +3,184 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Languages</title>
+    <title>Laravel Localizator</title>
+
     <style>
-        body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
         }
 
-        .card {
-            background-color: #1e1e1e;
-            padding: 30px 40px;
-            border-radius: 12px;
-            min-width: 300px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(98, 0, 234, 0.5);
+        body{
+            font-family:'Segoe UI';
+            background:linear-gradient(
+            135deg,
+            #0f172a,
+            #1e293b
+            );
+
+            min-height:100vh;
+            color:white;
+            padding:40px;
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #fff;
+        .container{
+            max-width:1100px;
+            margin:auto;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:20px;
+            margin-bottom:30px;
         }
 
-        input[type="text"] {
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            width: 100%;
-            background-color: #121212;
-            color: #fff;
+        .card{
+            background:rgba(
+            255,255,255,.07);
+
+            backdrop-filter:blur(18px);
+
+            padding:25px;
+
+            border-radius:20px;
         }
 
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            background-color: #6200ea;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.3s;
+        .stat h2{
+            font-size:35px;
         }
 
-        button:hover {
-            background-color: #3700b3;
+        .success{
+            background:#16a34a;
+            padding:15px;
+            border-radius:10px;
+            margin-bottom:20px;
         }
 
-        .languages {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        input{
+            width:100%;
+            padding:15px;
+            margin-bottom:15px;
+            border:none;
+            border-radius:10px;
+            background:#111827;
+            color:white;
         }
 
-        .language-item {
-            padding: 10px;
-            background-color: #121212;
-            border-radius: 6px;
-            transition: transform 0.2s, box-shadow 0.2s;
+        button{
+            width:100%;
+            padding:15px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            background:#7c3aed;
+            color:white;
         }
 
-        .language-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 8px #6200ea;
+        button:hover{
+            opacity:.9;
         }
 
-        .language-item a {
-            text-decoration: none;
-            color: #fff;
-            font-weight: bold;
-            display: block;
+        .language{
+            margin-top:15px;
+            padding:18px;
+            border-radius:12px;
+            background:#111827;
+            transition:.3s;
         }
 
-        .success {
-            padding: 10px;
-            margin-bottom: 15px;
-            background-color: #388e3c;
-            color: #fff;
-            border-radius: 6px;
+        .language:hover{
+            transform:translateY(-3px);
         }
+
+        a{
+            text-decoration:none;
+            color:white;
+        }
+
     </style>
+
 </head>
 
 <body>
 
+<div class="container">
+
+    <div class="stats">
+
+        <div class="card stat">
+            <h2>{{$totalLanguages}}</h2>
+            <p>Total Languages</p>
+        </div>
+
+        <div class="card stat">
+            <h2>{{$totalKeys}}</h2>
+            <p>Translation Keys</p>
+        </div>
+
+    </div>
+
     <div class="card">
-        <h1>Languages</h1>
+
+        <h1 style="margin-bottom:20px;">
+            Language Manager
+        </h1>
 
         @if(session('success'))
-            <div class="success">{{ session('success') }}</div>
+            <div class="success">
+                {{session('success')}}
+            </div>
         @endif
 
         <form method="POST" action="/language">
+
             @csrf
-            <input type="text" name="code" placeholder="Language Code (e.g., en)" required>
-            <input type="text" name="name" placeholder="Language Name (e.g., English)" required>
-            <button>Add</button>
+
+            <input
+                type="text"
+                name="code"
+                placeholder="Language code (en)"
+                required
+            >
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Language name"
+                required
+            >
+
+            <button>
+                Add Language
+            </button>
+
         </form>
 
-        <div class="languages">
-            @foreach($languages as $lang)
-                <div class="language-item">
-                    <a href="/translations/{{ $lang->code }}">
-                        {{ $lang->code }} — {{ $lang->name }}
-                    </a>
-                </div>
-            @endforeach
+        <h2 style="margin-top:30px;">
+            Languages
+        </h2>
+
+        @foreach($languages as $lang)
+
+        <div class="language">
+
+            <a href="/translations/{{$lang->code}}">
+
+                {{$lang->code}}
+                —
+                {{$lang->name}}
+
+            </a>
+
         </div>
+
+        @endforeach
+
     </div>
 
-</body>
+</div>
 
+</body>
 </html>

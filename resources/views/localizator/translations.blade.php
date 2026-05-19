@@ -1,159 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Translations - {{ $language->name }}</title>
+
+    <title>
+        {{$language->name}}
+        Translations
+    </title>
+
     <style>
-        body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card {
-            background-color: #1e1e1e;
-            padding: 40px 50px;
-            border-radius: 16px;
-            min-width: 500px;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(98, 0, 234, 0.5);
-        }
-
-        h1 {
-            margin-bottom: 25px;
-            color: #fff;
-            font-size: 1.8rem;
-        }
-
-        .success {
-            padding: 12px;
-            margin-bottom: 20px;
-            background-color: #388e3c;
-            color: #fff;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .translation-item {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #121212;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .translation-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 10px #6200ea;
-        }
-
-        label {
-            font-weight: bold;
-            margin-right: 15px;
-            min-width: 100px;
-            text-align: left;
-            font-size: 1rem;
-        }
-
-        input[type="text"] {
-            width: 250px;
-            padding: 8px 12px;
-            border: 1px solid #333;
-            border-radius: 6px;
-            background-color: #1e1e1e;
-            color: #fff;
-            font-size: 1rem;
             box-sizing: border-box;
         }
 
-        button {
-            padding: 12px 30px;
+        body {
+
+            font-family: 'Segoe UI';
+
+            background:
+                linear-gradient(135deg,
+                    #020617,
+                    #1e293b);
+
+            padding: 40px;
+
+            color: white;
+
+            min-height: 100vh;
+
+        }
+
+        .container {
+
+            max-width: 1000px;
+            margin: auto;
+
+        }
+
+        .card {
+
+            background:
+                rgba(255, 255, 255, .07);
+
+            backdrop-filter:
+                blur(18px);
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+        }
+
+        .search {
+
+            margin: 20px 0;
+
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            background: #111827;
+
             border: none;
-            border-radius: 8px;
-            background-color: #6200ea;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.3s;
-            align-self: center;
-            margin-top: 10px;
-            font-size: 1rem;
+
+            border-radius: 10px;
+
+            color: white;
+
         }
 
-        button:hover {
-            background-color: #3700b3;
+        .progress-box {
+
+            height: 35px;
+
+            background: #111827;
+
+            border-radius: 30px;
+
+            overflow: hidden;
+
+            margin: 15px 0 25px;
+
         }
 
-        .card-buttons {
+        .progress {
+
+            height: 100%;
+
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
 
-        .card-buttons a {
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            color: #fff;
+            justify-content: center;
+
+            align-items: center;
+
+            background: #7c3aed;
+
             font-weight: bold;
-            padding: 10px;
-            border-radius: 6px;
-            background-color: #333;
-            transition: background 0.3s;
+
         }
 
-        .card-buttons a:hover {
-            background-color: #6200ea;
+        .translation-item {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 15px;
+
+            margin-top: 15px;
+
+            background: #111827;
+
+            border-radius: 12px;
+
+        }
+
+        .translation-item input {
+
+            width: 320px;
+
+        }
+
+        button {
+
+            margin-top: 25px;
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            background: #7c3aed;
+
+            color: white;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+        }
+
+        .links {
+
+            display: flex;
+
+            gap: 15px;
+
+            margin-top: 20px;
+
+        }
+
+        .links a {
+
+            flex: 1;
+
+            padding: 15px;
+
+            background: #111827;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            color: white;
+
+        }
+
+        .success {
+
+            background: #16a34a;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-top: 20px;
+
         }
     </style>
+
 </head>
 
 <body>
 
-    <div class="card">
-        <h1>{{ $language->name }} Translations</h1>
+    <div class="container">
 
-        @if(session('success'))
-            <div class="success">{{ session('success') }}</div>
-        @endif
+        <div class="card">
 
-        <form method="POST" action="/translations/save/{{ $language->code }}">
-            @csrf
-            @foreach($translations as $translation)
-                <div class="translation-item">
-                    <label>{{ $translation->key }}</label>
-                    <input type="text" name="keys[{{ $translation->key }}]"
-                        value="{{ $translation->value[$language->code] ?? '' }}">
+            <h1>
+
+                {{$language->name}}
+                Translations
+
+            </h1>
+
+            <p style="margin-top:10px">
+
+                Completed:
+                {{$completed}}
+                /
+                {{$total}}
+
+            </p>
+
+            <div class="progress-box">
+
+                <div
+                    class="progress"
+                    style="width:{{$progress}}%">
+
+                    {{$progress}}%
+
                 </div>
-            @endforeach
 
-            <button>Save Translations</button>
-        </form>
+            </div>
 
-        <div class="card-buttons">
-            <a href="/export/{{ $language->code }}">Export JSON</a>
-            <a href="/">← Back to Languages</a>
+            <input
+                id="search"
+                class="search"
+                placeholder="Search translation key...">
+
+            @if(session('success'))
+
+            <div class="success">
+
+                {{session('success')}}
+
+            </div>
+
+            @endif
+
+            <form
+                method="POST"
+                action="/translations/save/{{$language->code}}">
+
+                @csrf
+
+                @foreach($translations as $translation)
+
+                <div class="translation-item">
+
+                    <label>
+                        {{$translation->key}}
+                    </label>
+
+                    <input
+                        type="text"
+                        name="keys[{{$translation->key}}]"
+                        value="{{$translation->value[$language->code] ?? ''}}">
+
+                </div>
+
+                @endforeach
+
+                <button>
+
+                    Save Translations
+
+                </button>
+
+            </form>
+
+            <div class="links">
+
+                <a href="/export/{{$language->code}}">
+                    Export JSON
+                </a>
+
+                <a href="/">
+                    Back
+                </a>
+
+            </div>
+
         </div>
+
     </div>
+
+
+    <script>
+        document
+            .getElementById(
+                'search'
+            )
+            .addEventListener(
+                'keyup',
+
+                function() {
+
+                    let value =
+                        this.value
+                        .toLowerCase();
+
+                    document
+                        .querySelectorAll(
+                            '.translation-item'
+                        )
+
+                        .forEach(
+                            item => {
+
+                                item.style.display =
+
+                                    item.innerText
+                                    .toLowerCase()
+                                    .includes(value)
+
+                                    ?
+
+                                    'flex'
+
+                                    :
+
+                                    'none';
+
+                            });
+
+                });
+    </script>
 
 </body>
 

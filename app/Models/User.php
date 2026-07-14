@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +47,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function languageAccess(): BelongsToMany
+    {
+        return $this->belongsToMany(Language::class, 'language_access');
+    }
+
+    public function hasLanguageAccess($languageId): bool
+    {
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        return $this->languageAccess()->where('language_id', $languageId)->exists();
     }
 }
